@@ -1,0 +1,39 @@
+user_stories.txt
+
+???		make exec branch for all development work on Assn2
+			branch off exec for features
+	
+Gordon	make ShellComponent class
+
+Gordon	get basic shell working
+		print command prompt
+		readline
+		fork, execvp, waitpid
+
+Nelson	parsing work
+			code in ShellComponent class
+			data in ParsedItems class
+			parse "#" for comments
+			parse ";" for multiple commands per line
+			parse "&&", "||" for command with connectors
+			
+Nelson	create classes Composite, Cmd and Connector
+			to hold ParsedItems
+			
+Nelson	misc
+			look into using StarUML or Visual.Pardigm
+			get Boost Tokenizer working
+
+Gordon	misc
+			review strtok() functionality
+
+Gordon	internal commands
+			exit
+
+???		test proc (see submission page)
+			make more test cases too
+			
+???		create JSON assn2.json (see submission page)
+		merge exec into master and create tag assn2
+			push tag to github
+

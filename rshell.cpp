@@ -6,6 +6,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include<bits/stdc++.h> // vector
+#include "component.h"
+#include "vector_container.h"
 
 using namespace std;
 
@@ -85,7 +88,9 @@ int lsh_launch(char **args)
 {
     pid_t pid, wpid;
     int status;
-
+//args[2]=0;
+//cout << "Ready to fork, " << args[0] << " with args " << args[1]  << "\n";
+//cout << "Ready to fork, " << args[0] << " with args " << args[1] << args[2] << "\n";
     pid = fork();
     if (pid == 0) {
         // Child process
@@ -139,7 +144,7 @@ char **lsh_split_line(char *line)
     return tokens;
 }
 
-char *lsh_read_line2(void)
+char *lsh_read_line(void)
 {
     char *line = NULL;
     ssize_t bufsize = 0; // have getline allocate a buffer for us
@@ -148,7 +153,7 @@ char *lsh_read_line2(void)
 }
 
 #define LSH_RL_BUFSIZE 1024
-char *lsh_read_line(void)
+char *lsh_read_line2(void)
 {
     int bufsize = LSH_RL_BUFSIZE;
     int position = 0;
@@ -203,22 +208,60 @@ int lsh_execute(char **args)
 
     return lsh_launch(args);
 }
+int my_execute(std::string str) {
+  char * args[10];
 
+  if (str == "") {
+    return 1;
+  }
+  if (str.substr(1,4) == "exit") {
+    exit(0);
+  }
+  args[0] = (char *)str.c_str(); //DDD Don't Do Dat? When does this string die?
+  args[1] = 0;
+  return lsh_launch(args);
+}
 
 void lsh_loop(void)
 {
     char *line;
     char **args;
+    vector <string> args2;
     int status;
-
+    char line2[254];
     do {
         printf("> ");
-        line = lsh_read_line();
-        args = lsh_split_line(line);
+        // pop a simple command off of Nelson's queue
+        Op2 *cmd1 = new Op2("ls -l");
+        line = cmd1->get_line();
+        strcpy(line2,line);
+//        strcpy(line2,"ls -l");
+        cout << "-----------------------------" << line2 << "------------------" << endl;
+        args = lsh_split_line(line2);
+        status = lsh_execute(args);
+        printf("> ");
+        printf("> ");
+        printf("> ");
+        printf("> ");
+        printf("> ");
+        printf("> ");
+        printf("> ");
+        printf("> ");
+        printf("> ");
+
+//        free(line);
+//        free(args);
+
+        printf("> ");
+
+  //      line = lsh_read_line();
+        strcpy(line2, string("exit").c_str());
+        args = lsh_split_line(line2);
         status = lsh_execute(args);
 
-        free(line);
+//        free(line);
         free(args);
+        // one command done, check connector to set flag to skip a command if neccessary
     } while (status);
 }
 
@@ -236,11 +279,11 @@ int main() {
     ShellComponent* rshell = new ShellComponent();
 
     //Get Input Values For Object Varibales
-    cout << "Enter the Number :";
-    cin >> rshell->id;
+//    cout << "Enter the Number :";
+//    cin >> rshell->id;
 
     //Show the Output
-    cout <<  rshell->id << endl;
+//    cout <<  rshell->id << endl;
     
     cout << "\nEntering shell - type exit to leave\n\n";
 	rshell->rshell();
