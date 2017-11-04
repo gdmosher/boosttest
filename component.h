@@ -18,6 +18,8 @@ class Base {
 
         /* Pure Virtual Functions */
         virtual double evaluate() = 0;
+        virtual int parse() = 0;
+        virtual int execute() = 0;
 };
 
 class Base2 {
@@ -41,6 +43,8 @@ class Operator: public Base {
 		Base* get_right() { return right; };
 		
 		virtual double evaluate() = 0;
+    virtual int parse() = 0;
+    virtual int execute() = 0;
 };
 
 class Operator2: public Base2 {
@@ -71,16 +75,17 @@ class Op: public Base {
 int lsh_execute(char**);
 class ShellComponent;
 //int ShellComponent::my_execute(std::string);
-class Op2: public Base2 {
-	private:
+class Op2: public Base {
+	public:
 		double value; // not used
     std::string cmd;
     char** args;
     char line[255];
 		
 	public:
-		Op2() : Base2(), value(0){}
-		Op2(string str) : Base2(), cmd(str){}
+		Op2() : Base(), value(0){}
+		Op2(string str) : Base(), cmd(str){}
+    double evaluate() { return 0; }
     int parse() {return 0;}
     int execute() {
 //      return ShellComponent::my_execute(cmd);
@@ -104,8 +109,10 @@ class Add: public Operator {
     ~Add();
     Add (Base* left, Base* right) : Operator(left, right) {};
     double evaluate() {
-		return this->left->evaluate() + this->right->evaluate();
-	};
+		  return this->left->evaluate() + this->right->evaluate();
+	  };
+    int parse() {return 0;}
+    int execute() {return 0;}
 };
 
 class Sub: public Operator {
@@ -116,6 +123,8 @@ class Sub: public Operator {
     double evaluate() {
 		return this->left->evaluate() - this->right->evaluate();
 	};
+    int parse() {return 0;}
+    int execute() {return 0;}
 };
 
 class Mult: public Operator {
@@ -126,6 +135,8 @@ class Mult: public Operator {
     double evaluate() {
 		return this->left->evaluate() * this->right->evaluate();
 	};
+    int parse() {return 0;}
+    int execute() {return 0;}
 };
 
 class Div: public Operator {
@@ -136,6 +147,8 @@ class Div: public Operator {
     double evaluate() {
 		return this->left->evaluate() / this->right->evaluate();
 	};
+    int parse() {return 0;}
+    int execute() {return 0;}
 };
 
 class Sqr: public Operator {
@@ -146,6 +159,8 @@ class Sqr: public Operator {
     double evaluate() {
 		return this->left->evaluate() * this->left->evaluate();
 	};
+    int parse() {return 0;}
+    int execute() {return 0;}
 };
 
 #endif // __COMPONENT_H__

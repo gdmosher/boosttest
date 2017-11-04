@@ -108,7 +108,7 @@ int lsh_launch(char **args)
         } while (!WIFEXITED(status) && !WIFSIGNALED(status));
     }
 
-    return 1;
+    return status;
 }
 
 #define LSH_TOK_BUFSIZE 64
@@ -200,6 +200,10 @@ int lsh_execute(char **args)
         return 1;
     }
 
+    if (strcmp(args[0], "exit") == 0) {
+      exit(0);
+    }
+
     for (i = 0; i < lsh_num_builtins(); i++) {
         if (strcmp(args[0], builtin_str[i]) == 0) {
             return (*builtin_func[i])(args);
@@ -229,39 +233,80 @@ void lsh_loop(void)
     vector <string> args2;
     int status;
     char line2[254];
+    char con[254];
+    Op2* con1;
+    Op2* cmd1;
+    int index;
+
+    DoubleFactory* dblfact = new DoubleFactory();
+    VectorContainer* vcmd = new VectorContainer(dblfact);
+    VectorContainer* vcon = new VectorContainer(dblfact);
+
     do {
         printf("> ");
+//      parse(); // readline and parse to container
+      index = 0;
+      int end_index = vcmd->size();
+      do {      // loop until all parsed data is processed  
         // pop a simple command off of Nelson's queue
-        Op2 *cmd1 = new Op2("ls -l");
+        cmd1 = new Op2("exit");
+        if (index >= end_index) {
+          break;
+        }
+//        cmd1 = vcmd->at(index);
         line = cmd1->get_line();
         strcpy(line2,line);
 //        strcpy(line2,"ls -l");
         cout << "-----------------------------" << line2 << "------------------" << endl;
         args = lsh_split_line(line2);
+
         status = lsh_execute(args);
-        printf("> ");
-        printf("> ");
-        printf("> ");
-        printf("> ");
-        printf("> ");
-        printf("> ");
-        printf("> ");
-        printf("> ");
-        printf("> ");
+        cout << "Status: "<< status << endl;
 
-//        free(line);
-//        free(args);
-
+        con1 = (Op2*)vcon->at(index);
+        index++; // same index for cmd1 and con1
+        strcpy(con, con1->get_line());
+        if      (con1->cmd == ";" ) {
+        }
+        else if (con1->cmd == "&&") {
+          if (status == 0) {
+          }
+          else {
+            index++; // just trash the next command
+          }
+        } 
+        else if (con1->cmd == "||") {
+          if (status == 0) {
+            index++; // just trash the next command
+          }
+          else {
+          }
+        }
         printf("> ");
-
-  //      line = lsh_read_line();
-        strcpy(line2, string("exit").c_str());
-        args = lsh_split_line(line2);
-        status = lsh_execute(args);
+        printf("> ");
+        printf("> ");
+        printf("> ");
+        printf("> ");
+        printf("> ");
+        printf("> ");
+        printf("> ");
+        printf("> ");
 
 //        free(line);
         free(args);
+
         // one command done, check connector to set flag to skip a command if neccessary
+      } while (status);
+   //     printf("> ");
+
+  //      line = lsh_read_line();
+/*
+        strcpy(line2, string("exit").c_str());
+        args = lsh_split_line(line2);
+        status = lsh_execute(args);
+*/
+//        free(line);
+     //   free(args);
     } while (status);
 }
 
