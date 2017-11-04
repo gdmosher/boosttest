@@ -12,6 +12,110 @@
 
 using namespace std;
 
+void parse(VectorContainer* &vcmd, VectorContainer* &vcon)
+{
+    string str;
+    getline(cin, str);
+    cout << "We will be parsing: \n\"" << str << "\"\n\n";
+    
+    // connectors we're concerned with, # is different so it's not included
+    vector<string> connector{"&&", "||", ";"};
+    
+    vector<string> cmd;
+    vector<string>con;
+    // string that stores the current connector, if the string has one
+    string current;
+    
+    // tries to find the first instance of #
+    size_t pos = str.find("#");
+    if(pos != string::npos)
+    {
+        // if found, then keep everything before the # and throw away everything else
+        cout << "Found a \"#\" at index " << pos << ", removing everything after.\n";
+        str = str.substr(0, pos);
+        cout << "We will be parsing: \n\"" << str << "\"\n\n";
+    }
+    // reset pos just in case
+    pos = 0;
+    
+    // set up a bool that will return true when str has one of the specified connectors
+    bool connector_found = true;
+    while(connector_found)
+    {
+        // stores positions of the three connectors, order is the same as the connector vector above
+        // &&, ||, ;
+        vector<int> positions{-1, -1, -1};
+        // find the first occurence of &&, ||, and ; (will be -1 if not found)
+        for(int i = 0; i < positions.size(); ++i){
+            positions.at(i) = str.find(connector.at(i));
+        }
+        // checks if all of the positions are -1
+        // if they are, then there are no connectors and the loop needs to stop
+        if (all_of(positions.begin(), positions.end(), [](int i){return i==-1;}) )
+        {
+            cout << "Connector not found. Ending process.." << endl;
+            cmd.push_back(str);
+            connector_found = false;
+            break;
+        }
+        
+        // now finds the first occurence of all three (smallest positive number in the vector)
+        int place = 0;
+        int min = INT_MAX;
+        for(int i = 0; i < positions.size(); ++i)
+        {
+            if(positions.at(i) >= 0 && positions.at(i) < min)
+            {
+                min = positions.at(i);
+                place = i;
+            }
+        }
+        // fair warning: lots of text output here to make the process clearer
+        // if we found a connector, identify it and save into current
+        current = connector.at(place);
+        cout << "Found a connector: \"" << current << "\"\n";
+        // find where the connector is
+        pos = str.find(current);
+        // displays length of connector and where it is in the string
+        cout << "\"" << current << "\" is " << current.length() << " characters long, found at index " << pos << endl;
+        
+        // push_back the command before connector into cmd
+        cout << "Adding \"" << str.substr(0, pos) << "\" to commands.." << endl;
+        cmd.push_back(str.substr(0, pos));
+        
+        // push_back the connector itself into con
+        cout << "Adding \"" << str.substr(pos, current.length()) << "\" to connectors.." << endl;
+        con.push_back(str.substr(pos, current.length()));
+        
+        // delete everything before the first connector found and the connector itself
+        // (we already saved the command and connector earlier, no need to keep)
+        str.erase(0, pos + current.length());
+        cout << endl;
+    }
+    // print out the entire cmd vector, separated by four spaces per command
+    cout << endl << endl;
+    cout << "Printing cmd (commands): \n";
+    for(int i = 0; i < cmd.size(); ++i)
+    {
+        cout << "\"" << cmd.at(i) << "\"    ";
+    }
+    // same with the con vector for connectors
+    cout << "\nPrinting con (connectors): \n";
+    for(int i = 0; i < con.size(); ++i)
+    {
+        cout << "\"" << con.at(i) << "\"    ";
+    }
+    cout << endl;
+    for(int i = 0; i < cmd.size(); ++i)
+    {
+        vcmd->add_element(new Op2(cmd.at(i)));
+    }
+    for(int i = 0; i < con.size(); ++i)
+    {
+        vcon->add_element(new Op2(con.at(i)));
+    }
+    return;
+}
 
 /*
   Function Declarations for builtin shell commands:
@@ -244,16 +348,16 @@ void lsh_loop(void)
 
     do {
         printf("> ");
-//      parse(); // readline and parse to container
+      parse(vcmd, vcon);
       index = 0;
       int end_index = vcmd->size();
       do {      // loop until all parsed data is processed  
         // pop a simple command off of Nelson's queue
-        cmd1 = new Op2("exit");
+        //cmd1 = new Op2("exit");
         if (index >= end_index) {
           break;
         }
-//        cmd1 = vcmd->at(index);
+        cmd1 = (Op2*)vcmd->at(index);
         line = cmd1->get_line();
         strcpy(line2,line);
 //        strcpy(line2,"ls -l");
@@ -261,8 +365,14 @@ void lsh_loop(void)
         args = lsh_split_line(line2);
 
         status = lsh_execute(args);
+//        free(line);
+        free(args);
+
         cout << "Status: "<< status << endl;
 
+        if (index >= end_index-1) {
+          break;
+        }
         con1 = (Op2*)vcon->at(index);
         index++; // same index for cmd1 and con1
         strcpy(con, con1->get_line());
@@ -292,11 +402,9 @@ void lsh_loop(void)
         printf("> ");
         printf("> ");
 
-//        free(line);
-        free(args);
 
         // one command done, check connector to set flag to skip a command if neccessary
-      } while (status);
+      } while (1);
    //     printf("> ");
 
   //      line = lsh_read_line();
@@ -307,7 +415,12 @@ void lsh_loop(void)
 */
 //        free(line);
      //   free(args);
-    } while (status);
+     delete vcmd;
+     delete vcon;
+     VectorContainer* vcmd = new VectorContainer(dblfact);
+     VectorContainer* vcon = new VectorContainer(dblfact);
+     
+    } while (1);
 }
 
 void rshell(void)
