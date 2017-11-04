@@ -30,18 +30,14 @@ class VectorContainer : public Container
 {
 	public:
 		std::vector<Base*> cVector;
-		VectorContainer(BaseFactory* factory) : Container(factory) {}
+		VectorContainer() {}
 		
 		void add_element(Base* element) { cVector.push_back(element); }
 		
 		void print() {
-			
 			for (unsigned int i = 0; i < cVector.size(); i++)
 			{
-				//std::cout << cVector.at(i)->evaluate() << ' ';
-				//BaseFactory* base_factory = new HexFactory();
-				BasePrint* p = base_factory->generatePrint(cVector.at(i)->evaluate());
-				p->print();
+				std::cout << cVector.at(i)->evaluate() << ' ';
 			}
 		}
 		

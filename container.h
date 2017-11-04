@@ -3,20 +3,16 @@
 
 #include "component.h"
 #include "strategy.h"
-#include "BasePrint.h"
-#include "BaseFactory.h"
 class Sort;
-//class BaseFactory;
 
 class Container {
     protected: 
         Sort* sort_function;
-        BaseFactory* base_factory = 0;
 
     public: 
         /* Constructors */
-        Container(BaseFactory* factory) : base_factory(factory), sort_function(NULL) { }
-        Container(Sort* function, BaseFactory* factory){}; 
+        Container() : sort_function() { }
+        Container(Sort* function); 
 
         /* Non Virtual Functions */
         // Set the type of sorting algorithm
