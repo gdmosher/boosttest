@@ -16,7 +16,7 @@ void parse(VectorContainer* &vcmd, VectorContainer* &vcon)
 {
     string str;
     getline(cin, str);
-    cout << "We will be parsing: \n\"" << str << "\"\n\n";
+    //cout << "We will be parsing: \n\"" << str << "\"\n\n";
     
     // connectors we're concerned with, # is different so it's not included
     vector<string> connector{"&&", "||", ";"};
@@ -31,9 +31,9 @@ void parse(VectorContainer* &vcmd, VectorContainer* &vcon)
     if(pos != string::npos)
     {
         // if found, then keep everything before the # and throw away everything else
-        cout << "Found a \"#\" at index " << pos << ", removing everything after.\n";
+        //cout << "Found a \"#\" at index " << pos << ", removing everything after.\n";
         str = str.substr(0, pos);
-        cout << "We will be parsing: \n\"" << str << "\"\n\n";
+        //cout << "We will be parsing: \n\"" << str << "\"\n\n";
     }
     // reset pos just in case
     pos = 0;
@@ -46,14 +46,14 @@ void parse(VectorContainer* &vcmd, VectorContainer* &vcon)
         // &&, ||, ;
         vector<int> positions{-1, -1, -1};
         // find the first occurence of &&, ||, and ; (will be -1 if not found)
-        for(int i = 0; i < positions.size(); ++i){
+        for(unsigned i = 0; i < positions.size(); ++i){
             positions.at(i) = str.find(connector.at(i));
         }
         // checks if all of the positions are -1
         // if they are, then there are no connectors and the loop needs to stop
         if (all_of(positions.begin(), positions.end(), [](int i){return i==-1;}) )
         {
-            cout << "Connector not found. Ending process.." << endl;
+            //cout << "Connector not found. Ending process.." << endl;
             cmd.push_back(str);
             connector_found = false;
             break;
@@ -62,7 +62,7 @@ void parse(VectorContainer* &vcmd, VectorContainer* &vcon)
         // now finds the first occurence of all three (smallest positive number in the vector)
         int place = 0;
         int min = INT_MAX;
-        for(int i = 0; i < positions.size(); ++i)
+        for(unsigned i = 0; i < positions.size(); ++i)
         {
             if(positions.at(i) >= 0 && positions.at(i) < min)
             {
@@ -73,28 +73,29 @@ void parse(VectorContainer* &vcmd, VectorContainer* &vcon)
         // fair warning: lots of text output here to make the process clearer
         // if we found a connector, identify it and save into current
         current = connector.at(place);
-        cout << "Found a connector: \"" << current << "\"\n";
+        //cout << "Found a connector: \"" << current << "\"\n";
         // find where the connector is
         pos = str.find(current);
         // displays length of connector and where it is in the string
-        cout << "\"" << current << "\" is " << current.length() << " characters long, found at index " << pos << endl;
+        //cout << "\"" << current << "\" is " << current.length() << " characters long, found at index " << pos << endl;
         
         // push_back the command before connector into cmd
-        cout << "Adding \"" << str.substr(0, pos) << "\" to commands.." << endl;
+        //cout << "Adding \"" << str.substr(0, pos) << "\" to commands.." << endl;
         cmd.push_back(str.substr(0, pos));
         
         // push_back the connector itself into con
-        cout << "Adding \"" << str.substr(pos, current.length()) << "\" to connectors.." << endl;
+        //cout << "Adding \"" << str.substr(pos, current.length()) << "\" to connectors.." << endl;
         con.push_back(str.substr(pos, current.length()));
         
         // delete everything before the first connector found and the connector itself
         // (we already saved the command and connector earlier, no need to keep)
         str.erase(0, pos + current.length());
-        cout << endl;
+        //cout << endl;
     }
     // print out the entire cmd vector, separated by four spaces per command
-    cout << endl << endl;
-    cout << "Printing cmd (commands): \n";
+    //cout << endl << endl;
+    //cout << "Printing cmd (commands): \n";
+    /*
     for(int i = 0; i < cmd.size(); ++i)
     {
         cout << "\"" << cmd.at(i) << "\"    ";
@@ -106,11 +107,12 @@ void parse(VectorContainer* &vcmd, VectorContainer* &vcon)
         cout << "\"" << con.at(i) << "\"    ";
     }
     cout << endl;
-    for(int i = 0; i < cmd.size(); ++i)
+    */
+    for(unsigned i = 0; i < cmd.size(); ++i)
     {
         vcmd->add_element(new Op2(cmd.at(i)));
     }
-    for(int i = 0; i < con.size(); ++i)
+    for(unsigned i = 0; i < con.size(); ++i)
     {
         vcon->add_element(new Op2(con.at(i)));
     }
@@ -190,7 +192,7 @@ public:
     
 int lsh_launch(char **args)
 {
-    pid_t pid, wpid;
+    pid_t pid;
     int status;
 //args[2]=0;
 //cout << "Ready to fork, " << args[0] << " with args " << args[1]  << "\n";
@@ -208,7 +210,7 @@ int lsh_launch(char **args)
     } else {
         // Parent process
         do {
-            wpid = waitpid(pid, &status, WUNTRACED);
+            waitpid(pid, &status, WUNTRACED);
         } while (!WIFEXITED(status) && !WIFSIGNALED(status));
     }
 
@@ -342,9 +344,9 @@ void lsh_loop(void)
     Op2* cmd1;
     int index;
 
-    DoubleFactory* dblfact = new DoubleFactory();
-    VectorContainer* vcmd = new VectorContainer(dblfact);
-    VectorContainer* vcon = new VectorContainer(dblfact);
+//    DoubleFactory* dblfact = new DoubleFactory();
+    VectorContainer* vcmd = new VectorContainer();
+    VectorContainer* vcon = new VectorContainer();
 
     do {
         printf("> ");
@@ -392,15 +394,7 @@ void lsh_loop(void)
           else {
           }
         }
-        printf("> ");
-        printf("> ");
-        printf("> ");
-        printf("> ");
-        printf("> ");
-        printf("> ");
-        printf("> ");
-        printf("> ");
-        printf("> ");
+ //       printf("> ");
 
 
         // one command done, check connector to set flag to skip a command if neccessary
@@ -417,8 +411,8 @@ void lsh_loop(void)
      //   free(args);
      delete vcmd;
      delete vcon;
-     VectorContainer* vcmd = new VectorContainer(dblfact);
-     VectorContainer* vcon = new VectorContainer(dblfact);
+     VectorContainer* vcmd = new VectorContainer();
+     VectorContainer* vcon = new VectorContainer();
      
     } while (1);
 }

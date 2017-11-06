@@ -20,6 +20,8 @@ class Base {
         virtual double evaluate() = 0;
         virtual int parse() = 0;
         virtual int execute() = 0;
+        
+
 };
 
 class Base2 {
@@ -89,6 +91,7 @@ class Op2: public Base {
     int parse() {return 0;}
     int execute() {
 //      return ShellComponent::my_execute(cmd);
+	return 0;
     }
     char* get_line() {
       strcpy(line, cmd.c_str());
@@ -101,6 +104,7 @@ class Op2: public Base {
 // delete[] y;
 // //      return (char *)cmd.c_str();
     }
+    
 };
 
 class Add: public Operator {
